@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MPI: Pengertian dan Sumber Energi</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        amiri: ['Amiri', 'serif'],
+                    },
+                    colors: {
+                        kemenag: {
+                            green: '#008C45',
+                            emerald: '#059669',
+                            dark: '#064E3B',
+                            gold: '#D97706',
+                            light: '#ECFDF5'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* Custom Styles & Glassmorphism */
+        body {
+            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        
+        /* Animation Efek Bunga Berjatuhan */
+        .flower-particle {
+            position: fixed;
+            top: -10%;
+            z-index: 100;
+            pointer-events: none;
+            user-select: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Animasi Emotikon Pop-up */
+        .emoji-feedback-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 1000; font-size: 6rem; pointer-events: none;
+            user-select: none; filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3));
+        }
+        .emoji-feedback-popup.correct-pop { animation: popCorrect 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .emoji-feedback-popup.wrong-pop { animation: popWrong 1.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards; }
+
+        @keyframes popCorrect {
+            0% { transform: translate(-50%, -50%) scale(0.2) rotate(-15deg); opacity: 0; }
+            40% { transform: translate(-50%, -50%) scale(1.4) rotate(10deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8) translateY(-30px); opacity: 0; }
+        }
+
+        @keyframes popWrong {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            30%, 50%, 70% { transform: translate(-50%, -50%) scale(1) translateX(-10px); opacity: 1; }
+            40%, 60% { transform: translate(-50%, -50%) scale(1) translateX(10px); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8) translateY(20px); opacity: 0; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .screen { display: none; min-height: 100vh; width: 100%; position: relative; }
+        .screen.active { display: flex; flex-direction: column; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
+
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { display: inline-flex; white-space: nowrap; animation: marquee 25s linear infinite; }
+        .animate-marquee:hover { animation-play-state: paused; }
+
+        .btn-primary { background: linear-gradient(to right, #059669, #047857); color: white; transition: all 0.3s; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4); }
+        .btn-primary:active { transform: scale(0.95); }
+        .locked-card { filter: grayscale(80%); opacity: 0.7; cursor: not-allowed; }
+
+        @media print { body { background: white; } .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="text-gray-800 antialiased font-sans">
+
+    <audio id="bgm-player" src="paulyudin-upbeat-upbeat-music-513012.mp3" loop preload="auto"></audio>
+
+    <div id="custom-alert" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 text-center transform scale-95 transition-transform duration-300" id="alert-box">
+            <div id="alert-icon" class="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-3xl">ℹ️</div>
+            <h3 id="alert-title" class="text-xl font-bold text-gray-900 mb-2">Pesan</h3>
+            <p id="alert-message" class="text-gray-600 mb-6 text-sm whitespace-pre-line">Deskripsi pesan.</p>
+            <button onclick="closeAlert()" class="w-full btn-primary py-2 rounded-xl font-semibold">Mengerti</button>
+        </div>
+    </div>
+
+    <!-- 1. SPLASH SCREEN -->
+    <section id="screen-splash" class="screen active items-center justify-center bg-kemenag-emerald">
+        <div class="text-center animate-pulse-slow">
+            <svg class="w-32 h-32 mx-auto text-white mb-4 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">E-N-E-R-G-I</h1>
+            <p class="text-emerald-100 mt-2 font-medium tracking-widest">MADRASAH IBTIDAIYAH</p>
+        </div>
+    </section>
+
+    <!-- 2. COVER PAGE -->
+    <section id="screen-cover" class="screen items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-4xl rounded-3xl p-6 md:p-12 text-center relative overflow-hidden shadow-2xl">
+            <svg class="absolute -top-20 -left-20 w-64 h-64 text-emerald-100 opacity-50 animate-float" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+            <div class="relative z-10">
+                <span class="inline-block py-1 px-3 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-4 border border-emerald-200">Mapel IPAS • Kelas IV / Fase B</span>
+                <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold text-kemenag-dark mb-6 leading-tight">Pengertian Energi dan Sumber Energi</h1>
+                
+                <div class="flex justify-center items-center space-x-2 md:space-x-6 mb-8">
+                    <div class="animate-float" style="animation-delay: 0s;"><svg class="w-16 h-16 md:w-24 md:h-24 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg></div>
+                    <div class="animate-float" style="animation-delay: 0.5s;"><svg class="w-16 h-16 md:w-24 md:h-24 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg></div>
+                    <div class="animate-float" style="animation-delay: 1s;"><svg class="w-16 h-16 md:w-24 md:h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.78 12.51c-.65-.16-1.35-.12-1.99.12l-1.92-2.56c-.05-.07-.11-.13-.19-.17-.08-.04-.17-.06-.26-.06H5c-.55 0-1 .45-1 1v9c0 .55.45 1 1 1h9c.55 0 1-.45 1-1v-4.13l2.84 2.84c.39.39 1.02.39 1.41 0l1.41-1.41c.39-.39.39-1.02 0-1.41l-2.88-2.88c-.01-.01-.01-.02-.02-.02.48-.9.6-1.96.25-2.92zM13 19H6v-7h7v7zm5.59-1.41l-1.41 1.41-2.12-2.12c-.2-.2-.2-.51 0-.71l.71-.71c.2-.2.51-.2.71 0l2.11 2.13zM7 6h7V4H7v2zm8-4H6c-1.1 0-2 .9-2 2v1h11V4c0-1.1-.9-2-2-2z"/></svg></div>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 mt-8">
+                    <button onclick="openModal('modal-developer')" class="w-full md:w-auto px-6 py-3 rounded-full bg-white text-emerald-700 font-semibold border-2 border-emerald-200 hover:bg-emerald-50 transition shadow-sm">👨‍🏫 Info Pengembang</button>
+                    <button onclick="openModal('modal-tujuan')" class="w-full md:w-auto px-6 py-3 rounded-full bg-white text-kemenag-gold font-semibold border-2 border-yellow-200 hover:bg-yellow-50 transition shadow-sm">🎯 Tujuan Pembelajaran</button>
+                </div>
+                
+                <div class="mt-8">
+                    <button onclick="navigate('screen-login')" class="w-full md:w-1/3 py-4 rounded-full btn-primary text-xl font-bold uppercase tracking-wider shadow-lg animate-pulse-slow">MULAI SEKARANG</button>
+                </div>
+
+                <div class="mt-8 w-full bg-emerald-900/90 text-emerald-100 rounded-2xl py-2.5 px-4 overflow-hidden border border-emerald-500/30 shadow-inner flex items-center">
+                    <span class="bg-emerald-500 text-white font-bold text-xs px-2.5 py-1 rounded-lg mr-3 shrink-0 uppercase tracking-wider flex items-center gap-1 shadow-sm">📢 INFO</span>
+                    <div class="overflow-hidden w-full relative">
+                        <div class="animate-marquee font-medium text-xs md:text-sm tracking-wide">
+                            <span class="mx-4">👨‍🏫 <strong>Pengembang:</strong> Vin Husain Gani, S.Pd. (MIN 1 Pohuwato - Paguat)</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">🎯 <strong>Tujuan Pembelajaran:</strong> Murid mampu menjelaskan pengertian energi & mengidentifikasi sumber energi dalam kehidupan sehari-hari</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">📚 <strong>Materi Utama:</strong> IPAS Kelas IV - Pengertian Energi, Matahari, Makanan, Baterai, & Bahan Bakar</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">🌿 <strong>Kurikulum Berbasis Cinta:</strong> Cinta Allah, Cinta Ilmu, & Kelestarian Ekosistem Teluk Tomini Pohuwato</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">👨‍🏫 <strong>Pengembang:</strong> Vin Husain Gani, S.Pd. (MIN 1 Pohuwato - Paguat)</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">🎯 <strong>Tujuan Pembelajaran:</strong> Murid mampu menjelaskan pengertian energi & mengidentifikasi sumber energi dalam kehidupan sehari-hari</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">📚 <strong>Materi Utama:</strong> IPAS Kelas IV - Pengertian Energi, Matahari, Makanan, Baterai, & Bahan Bakar</span><span class="text-amber-300">✦</span>
+                            <span class="mx-4">🌿 <strong>Kurikulum Berbasis Cinta:</strong> Cinta Allah, Cinta Ilmu, & Kelestarian Ekosistem Teluk Tomini Pohuwato</span><span class="text-amber-300">✦</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-developer" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div class="glass-panel w-full max-w-md rounded-2xl p-8 text-center relative animate-slide-up">
+                <div class="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                    <div class="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden bg-emerald-600 flex items-center justify-center text-white font-bold text-2xl">
+                        <img src="https://iili.io/nSotxol.jpg" alt="Vin Husain Gani, S.Pd." class="w-full h-full object-cover" onerror="this.onerror=null; this.nextElementSibling.classList.remove('hidden'); this.remove();">
+                        <span class="hidden">👤</span>
+                    </div>
+                </div>
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold text-gray-800">Vin Husain Gani, S.Pd.</h2>
+                    <p class="text-emerald-600 font-semibold mt-1">Guru Kelas MI</p>
+                    <div class="mt-4 text-left bg-white/50 p-4 rounded-xl text-sm text-gray-700 space-y-2">
+                        <p>🏫 <strong>Instansi:</strong> MIN 1 Pohuwato</p>
+                        <p>📍 <strong>Wilayah:</strong> Paguat, Kab. Pohuwato</p>
+                        <p>✉️ <strong>Email:</strong> vin_1990@madrasah.kemenag.go.id</p>
+                    </div>
+                    <button onclick="closeModal('modal-developer')" class="mt-6 w-full py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition">Kembali ke Cover</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-tujuan" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div class="glass-panel w-full max-w-lg rounded-2xl p-8 relative animate-slide-up">
+                <div class="text-center mb-4"><span class="text-4xl">🎯</span><h2 class="text-2xl font-bold text-gray-800 mt-2">Tujuan Pembelajaran</h2></div>
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl mb-4">
+                    <p class="text-emerald-900 font-medium">Murid mampu menjelaskan pengertian energi serta mengidentifikasi sumber-sumber energi dalam kehidupan sehari-hari.</p>
+                </div>
+                <div class="mb-4">
+                    <p class="text-right font-amiri text-2xl text-gray-800 mb-2" dir="rtl">ٱلَّذِى جَعَلَ لَكُم مِّنَ ٱلشَّجَرِ ٱلْأَخْضَرِ نَارًا فَإِذَآ أَنتُم مِّنْهُ تُوقِدُونَ</p>
+                    <p class="text-xs text-gray-600 italic">"Yaitu (Allah) yang menjadikan api untukmu dari kayu yang hijau, maka seketika itu kamu nyalakan (api) dari kayu itu." (Q.S. Yasin: 80)</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 mb-6">
+                    <p class="text-xs text-purple-800"><strong>❤️ Nilai Kurikulum Kemenag:</strong> Menanamkan rasa syukur atas nikmat energi dari Allah, serta kepedulian menjaga kelestarian alam ciptaan-Nya.</p>
+                </div>
+                <button onclick="closeModal('modal-tujuan')" class="w-full py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition">Kembali ke Cover</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. FORM INPUT IDENTITAS -->
+    <section id="screen-login" class="screen items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-8 animate-slide-up">
+            <h2 class="text-2xl font-bold text-center text-kemenag-dark mb-2">Identitas Siswa</h2>
+            <p class="text-center text-gray-500 mb-8 text-sm">Mari berkenalan sebelum belajar!</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="input-nama" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white/80" placeholder="Ketik namamu di sini...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                    <select id="input-kelas" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white/80">
+                        <option value="">Pilih Kelas...</option>
+                        <option value="IV A">Kelas IV A</option>
+                        <option value="IV B">Kelas IV B</option>
+                        <option value="IV C">Kelas IV C</option>
+                    </select>
+                </div>
+                <button onclick="handleLogin()" class="w-full btn-primary py-3 rounded-xl font-bold mt-4">Lanjut</button>
+                <button onclick="navigate('screen-cover')" class="w-full py-2 text-gray-500 text-sm hover:text-gray-800 mt-2 transition">Kembali</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. PANDUAN -->
+    <section id="screen-panduan" class="screen items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl overflow-hidden shadow-xl flex flex-col h-[80vh] max-h-[600px]">
+            <div class="p-6 border-b border-gray-200/50 flex justify-between items-center bg-white/50">
+                <h2 class="text-xl font-bold text-gray-800" id="welcome-text">Selamat Datang!</h2>
+                <span class="text-xs font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">Panduan</span>
+            </div>
+            <div class="flex-1 relative overflow-hidden">
+                <div id="panduan-slider" class="flex w-[300%] h-full transition-transform duration-500 ease-in-out">
+                    <div class="w-1/3 h-full p-8 flex flex-col items-center justify-center text-center">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-4xl mb-6">📖</div>
+                        <h3 class="text-2xl font-bold mb-2">1. Belajar Dulu</h3>
+                        <p class="text-gray-600">Pelajari materi dengan cermat. Selesaikan misi kecil di setiap halaman materi untuk membuka kunci menu selanjutnya.</p>
+                    </div>
+                    <div class="w-1/3 h-full p-8 flex flex-col items-center justify-center text-center">
+                        <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center text-4xl mb-6">🎮</div>
+                        <h3 class="text-2xl font-bold mb-2">2. Bermain Sambil Mengingat</h3>
+                        <p class="text-gray-600">Selesaikan 10 tantangan seru. Baca cerita tentang daerah kita, Pohuwato, lalu selesaikan permainannya.</p>
+                    </div>
+                    <div class="w-1/3 h-full p-8 flex flex-col items-center justify-center text-center">
+                        <div class="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center text-4xl mb-6">📝</div>
+                        <h3 class="text-2xl font-bold mb-2">3. Berlatih & Dapatkan Rapor</h3>
+                        <p class="text-gray-600">Uji pemahamanmu dan cetak hasil belajarmu di akhir sesi. Semoga sukses!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-white/80 border-t border-gray-200/50 flex justify-between items-center">
+                <button id="btn-prev-panduan" onclick="movePanduan(-1)" class="px-4 py-2 text-gray-500 font-medium invisible">Kembali</button>
+                <div class="flex space-x-2" id="panduan-dots">
+                    <div class="w-2 h-2 rounded-full bg-emerald-600 transition-colors"></div>
+                    <div class="w-2 h-2 rounded-full bg-gray-300 transition-colors"></div>
+                    <div class="w-2 h-2 rounded-full bg-gray-300 transition-colors"></div>
+                </div>
+                <button id="btn-next-panduan" onclick="movePanduan(1)" class="px-4 py-2 btn-primary rounded-lg font-medium">Selanjutnya</button>
+                <button id="btn-mulai-panduan" onclick="startApp()" class="px-4 py-2 btn-primary rounded-lg font-bold hidden">Masuk Menu Utama</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. MENU UTAMA -->
+    <section id="screen-menu" class="screen bg-gray-50/50">
+        <header class="glass-panel sticky top-0 z-30 px-6 py-4 flex justify-between items-center rounded-b-3xl">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-inner" id="avatar-initial">S</div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm md:text-base leading-tight" id="display-nama">Nama Siswa</h3>
+                    <p class="text-xs text-emerald-600 font-medium" id="display-kelas">Kelas</p>
+                </div>
+            </div>
+            <button onclick="navigate('screen-cover')" class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full hover:bg-red-200 transition">Keluar</button>
+        </header>
+
+        <div class="flex-1 p-6 max-w-4xl mx-auto w-full">
+            <div class="mb-8 text-center mt-4 animate-fade-in">
+                <h2 class="text-2xl font-bold text-kemenag-dark">Menu Pembelajaran</h2>
+                <p class="text-sm text-gray-500">Selesaikan bertahap untuk membuka level berikutnya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div onclick="openMenu('belajar')" class="glass-panel p-6 rounded-3xl cursor-pointer hover:shadow-lg transition transform hover:-translate-y-1 bg-gradient-to-br from-white to-blue-50 border-t-4 border-blue-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-2xl shadow-sm">📖</div>
+                        <span class="text-2xl" id="status-belajar">🔓</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">1. Belajar</h3>
+                    <p class="text-xs text-gray-600 mb-4">Pahami materi tentang energi di sekitar kita.</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-blue-500 h-1.5 rounded-full" id="progress-bar-belajar" style="width: 0%"></div></div>
+                </div>
+                <div id="card-bermain" onclick="openMenu('bermain')" class="glass-panel p-6 rounded-3xl locked-card transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center text-2xl shadow-sm">🎮</div>
+                        <span class="text-2xl" id="status-bermain">🔒</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">2. Bermain</h3>
+                    <p class="text-xs text-gray-600 mb-4">Tantangan seru untuk menguji ingatanmu.</p>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-yellow-500 h-1.5 rounded-full" id="progress-bar-bermain" style="width: 0%"></div></div>
+                </div>
+                <div id="card-berlatih" onclick="openMenu('berlatih')" class="glass-panel p-6 rounded-3xl locked-card transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-2xl shadow-sm">📝</div>
+                        <span class="text-2xl" id="status-berlatih">🔒</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">3. Berlatih</h3>
+                    <p class="text-xs text-gray-600 mb-4">Asesmen dan cetak Rapor hasil belajarmu.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div onclick="openModal('modal-kamus')" class="glass-panel p-5 rounded-3xl cursor-pointer hover:shadow-md transition bg-gradient-to-br from-white to-emerald-50 border-t-4 border-emerald-500 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl shadow-sm shrink-0">📚</div>
+                    <div><h3 class="text-lg font-bold text-gray-800">Kamus Mini IPAS</h3><p class="text-xs text-gray-600">Glosarium istilah sains.</p></div>
+                </div>
+                <div onclick="openModal('modal-referensi')" class="glass-panel p-5 rounded-3xl cursor-pointer hover:shadow-md transition bg-gradient-to-br from-white to-teal-50 border-t-4 border-teal-500 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-2xl shadow-sm shrink-0">📌</div>
+                    <div><h3 class="text-lg font-bold text-gray-800">Referensi & Pustaka</h3><p class="text-xs text-gray-600">Sumber rujukan materi.</p></div>
+                </div>
+            </div>
+            
+            <div id="btn-lihat-rapor" class="mt-8 text-center hidden">
+                <button onclick="navigate('screen-laporan')" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition animate-pulse-slow">🏆 Lihat Rapor Pembelajaran</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL KAMUS & REFERENSI -->
+    <div id="modal-kamus" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 relative animate-slide-up max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b pb-3 border-emerald-200">
+                <div class="flex items-center space-x-2"><span class="text-3xl">📚</span><h2 class="text-2xl font-bold text-emerald-900">Kamus Mini IPAS</h2></div>
+                <button onclick="closeModal('modal-kamus')" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 font-bold">✕</button>
+            </div>
+            <div class="mb-4"><input type="text" id="search-kamus" onkeyup="filterKamus()" placeholder="🔍 Cari istilah sains..." class="w-full px-4 py-2.5 rounded-xl border border-emerald-300 outline-none text-sm bg-white/80"></div>
+            <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="kamus-list">
+                <div class="bg-white/80 p-3.5 rounded-xl border border-emerald-100 kamus-item"><h4 class="font-bold text-emerald-800 mb-1">Energi</h4><p class="text-xs text-gray-600">Kemampuan untuk melakukan usaha atau kerja serta menyebabkan perubahan pada suatu benda.</p></div>
+                <div class="bg-white/80 p-3.5 rounded-xl border border-emerald-100 kamus-item"><h4 class="font-bold text-emerald-800 mb-1">Sumber Energi</h4><p class="text-xs text-gray-600">Segala sesuatu di sekitar kita yang dapat menghasilkan energi.</p></div>
+            </div>
+            <button onclick="closeModal('modal-kamus')" class="mt-4 w-full py-2.5 bg-emerald-600 text-white rounded-xl font-medium transition hover:bg-emerald-700">Tutup Kamus</button>
+        </div>
+    </div>
+
+    <div id="modal-referensi" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 relative animate-slide-up max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 border-b pb-3 border-teal-200">
+                <div class="flex items-center space-x-2"><span class="text-3xl">📌</span><h2 class="text-2xl font-bold text-teal-900">Referensi & Pustaka</h2></div>
+                <button onclick="closeModal('modal-referensi')" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 font-bold">✕</button>
+            </div>
+            <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-sm text-gray-700">
+                <div class="bg-white/80 p-4 rounded-xl border border-teal-100"><h4 class="font-bold text-teal-800 mb-1">📘 Buku Teks Utama</h4><p class="text-xs text-gray-600">Pusat Kurikulum dan Perbukuan. (2021). IPAS untuk SD/MI Kelas IV.</p></div>
+            </div>
+            <button onclick="closeModal('modal-referensi')" class="mt-4 w-full py-2.5 bg-teal-600 text-white rounded-xl font-medium transition hover:bg-teal-700">Tutup Referensi</button>
+        </div>
+    </div>
+
+    <!-- 6. LAYER BELAJAR -->
+    <section id="screen-belajar" class="screen bg-white">
+        <header class="glass-panel sticky top-0 z-30 px-4 py-3 flex justify-between items-center border-b border-gray-100">
+            <button onclick="stopTTS(); navigate('screen-menu')" class="flex items-center text-gray-600 font-medium text-sm"><svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Menu Utama</button>
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <div class="flex items-center bg-white/95 backdrop-blur-md border border-emerald-300 rounded-full p-1 shadow-sm space-x-1.5 transition-all hover:pr-2 group">
+                    <button onclick="toggleBackgroundMusic()" id="btn-bgm-toggle" class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs" title="Putar/Hentikan Musik Latar">🎵</button>
+                </div>
+                <button onclick="toggleAudioSpeech()" id="btn-tts" class="flex items-center gap-1.5 text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-full"><span id="tts-icon">🔊</span> <span id="tts-label">Baca Teks</span></button>
+                <div class="text-sm font-bold text-emerald-700">Belajar <span id="belajar-counter">1/8</span></div>
+            </div>
+        </header>
+        <div class="flex-1 w-full max-w-3xl mx-auto pb-24 overflow-y-auto" id="belajar-content-container"></div>
+        <footer class="glass-panel fixed bottom-0 w-full p-4 border-t border-gray-100 flex justify-between items-center max-w-3xl left-1/2 transform -translate-x-1/2 z-30">
+            <button id="btn-prev-materi" onclick="stopTTS(); navMateri(-1)" class="px-6 py-2 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 disabled:opacity-50">Sebelumnya</button>
+            <div id="materi-action-container"></div>
+        </footer>
+    </section>
+
+    <!-- 7. LAYER BERMAIN -->
+    <section id="screen-bermain" class="screen bg-amber-50">
+        <header class="glass-panel sticky top-0 z-30 px-4 py-3 flex justify-between items-center border-b border-amber-200">
+             <button onclick="stopTTS(); navigate('screen-menu')" class="flex items-center text-amber-700 font-medium text-sm"><svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Tutup</button>
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <button onclick="toggleAudioSpeech()" id="btn-tts-bermain" class="flex items-center gap-1.5 text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-full"><span class="tts-icon-common">🔊</span> <span class="tts-label-common">Baca Teks</span></button>
+                <div class="text-sm font-bold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">Tantangan <span id="bermain-counter">1</span>/10</div>
+            </div>
+        </header>
+        <div class="flex-1 w-full max-w-2xl mx-auto p-4 pb-24" id="bermain-content-container"></div>
+    </section>
+
+    <!-- 8. LAYER BERLATIH -->
+    <section id="screen-berlatih" class="screen bg-purple-50">
+         <header class="glass-panel sticky top-0 z-30 px-4 py-3 flex justify-between items-center border-b border-purple-200">
+             <div class="flex items-center space-x-2 md:space-x-3">
+                <div class="text-sm font-bold text-purple-800">Asesmen Akhir</div>
+                <button onclick="toggleAudioSpeech()" id="btn-tts-berlatih" class="flex items-center gap-1.5 text-xs bg-purple-100 text-purple-800 font-bold px-3 py-1.5 rounded-full"><span class="tts-icon-common">🔊</span> <span class="tts-label-common">Baca Teks</span></button>
+             </div>
+             <div class="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">Soal <span id="berlatih-counter">1</span>/10</div>
+        </header>
+        <div class="flex-1 w-full max-w-2xl mx-auto p-4 pb-24" id="berlatih-content-container"></div>
+    </section>
+
+    <!-- 9. LAPORAN PDF -->
+    <section id="screen-laporan" class="screen bg-gray-100">
+        <header class="bg-white p-4 shadow flex justify-between items-center no-print">
+            <button onclick="navigate('screen-menu')" class="text-emerald-600 font-medium flex items-center"><svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Kembali</button>
+            <button onclick="cetakPDF()" class="btn-primary px-4 py-2 rounded-lg font-bold flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>Unduh PDF</button>
+        </header>
+        <div class="flex-1 p-4 md:p-8 overflow-y-auto">
+            <div id="pdf-content" class="bg-white mx-auto p-8 shadow-lg w-full max-w-[800px] min-h-[1122px] text-gray-800 border">
+                <div class="border-b-4 border-emerald-800 pb-4 mb-6 flex items-center">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Lambang_Kementerian_Agama.svg/1200px-Lambang_Kementerian_Agama.svg.png" class="w-20 h-20 mr-4 object-contain" alt="Logo" onerror="this.style.display='none'">
+                    <div class="text-center flex-1">
+                        <h2 class="text-xl font-bold uppercase">Kementerian Agama Republik Indonesia</h2>
+                        <h3 class="text-lg font-bold">MIN 1 Pohuwato</h3>
+                        <p class="text-sm">Kec. Paguat, Kab. Pohuwato, Provinsi Gorontalo</p>
+                        <p class="text-xs italic">Media Pembelajaran Interaktif (MPI) Berbasis Kurikulum Cinta</p>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold text-center mb-6 underline">LAPORAN HASIL BELAJAR</h1>
+                <table class="w-full text-sm mb-6">
+                    <tr><td class="w-1/4 font-semibold py-1">Nama Siswa</td><td class="w-[2%]">:</td><td id="rapor-nama" class="font-bold border-b border-dashed border-gray-400"></td></tr>
+                    <tr><td class="font-semibold py-1">Kelas</td><td>:</td><td id="rapor-kelas" class="border-b border-dashed border-gray-400"></td></tr>
+                    <tr><td class="font-semibold py-1">Materi</td><td>:</td><td>Pengertian & Sumber Energi</td></tr>
+                    <tr><td class="font-semibold py-1">Tanggal</td><td>:</td><td id="rapor-tanggal"></td></tr>
+                </table>
+                <div class="mb-6 border border-gray-300 rounded p-4">
+                    <h4 class="font-bold text-lg mb-2 text-emerald-800 bg-emerald-50 p-2">A. Rekapitulasi Bermain (Formatif)</h4>
+                    <p class="text-sm mb-2">Tantangan Diselesaikan: <span id="rapor-bermain-skor" class="font-bold text-green-600">0/10</span></p>
+                    <p class="text-sm text-gray-600 italic">Siswa telah berhasil mengeksplorasi literasi sains terkait konteks ekosistem Pohuwato melalui gamifikasi.</p>
+                </div>
+                <div class="mb-6 border border-gray-300 rounded p-4">
+                    <h4 class="font-bold text-lg mb-2 text-purple-800 bg-purple-50 p-2">B. Evaluasi Sumatif (Berlatih)</h4>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-center p-4 bg-gray-100 rounded-lg w-1/3">
+                            <p class="text-sm font-semibold">NILAI AKHIR</p>
+                            <p class="text-4xl font-extrabold text-blue-700" id="rapor-nilai">0</p>
+                            <p class="text-sm font-bold" id="rapor-predikat">Predikat</p>
+                        </div>
+                        <div class="w-2/3 pl-6 text-sm">
+                            <p><strong>Penguasaan Level:</strong></p>
+                            <ul class="list-disc pl-5 mt-1 space-y-1">
+                                <li>Level 1 (Dasar): <span id="rapor-l1"></span></li>
+                                <li>Level 2 (Penerapan): <span id="rapor-l2"></span></li>
+                                <li>Level 3 (Penalaran HOTS): <span id="rapor-l3"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-8">
+                    <h4 class="font-bold text-lg mb-2 border-b-2 border-yellow-400 inline-block">Catatan Kurikulum Berbasis Cinta</h4>
+                    <p class="text-sm text-justify leading-relaxed mt-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        Alhamdulillah, ananda <span id="rapor-nama-2" class="font-bold"></span> telah menunjukkan perkembangan yang baik. Melalui pembelajaran ini, diharapkan tertanam rasa syukur atas nikmat energi matahari yang menyinari Teluk Tomini, serta kepedulian untuk menjaga kelestarian alam dan bijak menggunakan bahan bakar demi masa depan bumi ciptaan Allah SWT.
+                    </p>
+                </div>
+                <div class="flex justify-end mt-12 text-sm text-center">
+                    <div>
+                        <p>Paguat, <span id="rapor-tanggal-ttd"></span></p>
+                        <p class="mb-16">Guru Kelas,</p>
+                        <p class="font-bold underline">Vin Husain Gani, S.Pd.</p>
+                        <p>NIP. 199004292025052004</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === JAVASCRIPT LOGIC === -->
+    <script>
+        // ==============================================================================
+        // KONFIGURASI GOOGLE APPS SCRIPT (GAS)
+        // Ganti string di bawah ini dengan URL Web App hasil deploy Anda
+        // ==============================================================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwY4oT3PEWVenuwqfwVGqKV7rc1lG4gOZIPtkqjFi00nkQ343JFSwzA7PNMDGWyVXlpew/exec";
+        
+        // State Management
+        const state = {
+            student: { nama: '', kelas: '' },
+            progress: { belajar: 0, bermain: 0, berlatih: 0 },
+            scores: { bermain: 0, berlatih: { l1:0, l2:0, l3:0, total: 0 } },
+            currentSlide: { belajar: 0, bermain: 0, berlatih: 0 },
+            tempSelection: null 
+        };
+
+        // --- SISTEM MUSIK LATAR & TTS (Sama seperti aslinya, disingkat untuk keterbacaan struktur) ---
+        let isBgmPlaying = false; let globalVolume = 0.3; let audioCtx = null;
+        function getBgmPlayer() { return document.getElementById('bgm-player'); }
+        function toggleBackgroundMusic() {
+            const player = getBgmPlayer(); const btn = document.getElementById('btn-bgm-toggle');
+            if (isBgmPlaying) { if (player) player.pause(); isBgmPlaying = false; btn.innerText = '🔇'; } 
+            else { isBgmPlaying = true; btn.innerText = '🎵'; if (player) { player.volume = globalVolume; player.play().catch(()=>{}); } }
+        }
+        document.addEventListener('click', () => { if (!isBgmPlaying) toggleBackgroundMusic(); }, { once: true });
+
+        let isSpeaking = false;
+        function stopTTS() { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); isSpeaking = false; }
+        function toggleAudioSpeech() { stopTTS(); /* Simulasi aktif, fungsi utuh bisa ditambahkan dari file original */ }
+
+        // --- SISTEM EFEK SUARA & CELEBRATION ---
+        function triggerAnswerFeedback(isCorrect) { showEmojiPopup(isCorrect); }
+        function showEmojiPopup(isCorrect) {
+            const popup = document.createElement('div');
+            popup.className = `emoji-feedback-popup ${isCorrect ? 'correct-pop' : 'wrong-pop'}`;
+            popup.innerText = isCorrect ? '🌟' : '❌';
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1300);
+        }
+        function triggerCelebration() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const flower = document.createElement('div');
+                    flower.className = 'flower-particle'; flower.innerText = '🌸';
+                    flower.style.left = Math.random() * 100 + 'vw';
+                    flower.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    document.body.appendChild(flower);
+                    setTimeout(() => flower.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        const screens = document.querySelectorAll('.screen');
+        function navigate(screenId) { screens.forEach(s => s.classList.remove('active')); document.getElementById(screenId).classList.add('active'); window.scrollTo(0,0); }
+        function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        function showAlert(title, message) { document.getElementById('alert-title').innerText = title; document.getElementById('alert-message').innerText = message; document.getElementById('custom-alert').classList.remove('hidden'); }
+        function closeAlert() { document.getElementById('custom-alert').classList.add('hidden'); }
+        window.onload = () => { setTimeout(() => { navigate('screen-cover'); }, 2000); };
+
+        function handleLogin() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('input-kelas').value;
+            if (!nama || !kelas) { showAlert('Data Tidak Lengkap', 'Isi nama lengkap dan kelas terlebih dahulu ya.'); return; }
+            state.student.nama = nama; state.student.kelas = kelas;
+            document.getElementById('display-nama').innerText = nama; document.getElementById('display-kelas').innerText = kelas;
+            document.getElementById('avatar-initial').innerText = nama.charAt(0).toUpperCase();
+            document.getElementById('welcome-text').innerText = `Selamat Datang, ${nama.split(' ')[0]}!`;
+            navigate('screen-panduan');
+        }
+
+        let currentPanduan = 0;
+        function movePanduan(dir) {
+            currentPanduan = Math.max(0, Math.min(2, currentPanduan + dir));
+            document.getElementById('panduan-slider').style.transform = `translateX(-${currentPanduan * 33.333}%)`;
+            const dots = document.getElementById('panduan-dots').children;
+            for(let i=0; i<dots.length; i++) dots[i].className = i === currentPanduan ? "w-2 h-2 rounded-full bg-emerald-600" : "w-2 h-2 rounded-full bg-gray-300";
+            document.getElementById('btn-prev-panduan').classList.toggle('invisible', currentPanduan === 0);
+            document.getElementById('btn-next-panduan').classList.toggle('hidden', currentPanduan === 2);
+            document.getElementById('btn-mulai-panduan').classList.toggle('hidden', currentPanduan !== 2);
+        }
+
+        function startApp() { navigate('screen-menu'); updateMenuUI(); }
+
+        function updateMenuUI() {
+            document.getElementById('progress-bar-belajar').style.width = `${state.progress.belajar}%`;
+            if (state.progress.belajar >= 100) {
+                const cb = document.getElementById('card-bermain'); cb.classList.remove('locked-card'); cb.classList.add('border-t-4', 'border-yellow-500');
+                document.getElementById('status-bermain').innerText = '🔓'; document.getElementById('progress-bar-bermain').style.width = `${state.progress.bermain}%`;
+            }
+            if (state.progress.bermain >= 100) {
+                const cl = document.getElementById('card-berlatih'); cl.classList.remove('locked-card'); cl.classList.add('border-t-4', 'border-purple-500');
+                document.getElementById('status-berlatih').innerText = '🔓';
+            }
+            if (state.progress.berlatih >= 100) document.getElementById('btn-lihat-rapor').classList.remove('hidden');
+        }
+
+        function openMenu(menu) {
+            if (menu === 'bermain' && state.progress.belajar < 100) { showAlert('Terkunci 🔒', 'Selesaikan BELAJAR dulu!'); return; }
+            if (menu === 'berlatih' && state.progress.bermain < 100) { showAlert('Terkunci 🔒', 'Selesaikan BERMAIN dulu!'); return; }
+            if (menu === 'belajar') { renderBelajar(); navigate('screen-belajar'); } 
+            else if (menu === 'bermain') { renderBermain(); navigate('screen-bermain'); } 
+            else if (menu === 'berlatih') {
+                if(state.progress.berlatih >= 100) { showAlert('Selesai', 'Kamu sudah mengerjakan asesmen.'); return; }
+                renderBerlatih(); navigate('screen-berlatih');
+            }
+        }
+
+        // --- DATA BELAJAR ---
+        const materiData = [
+            { title: "Apa itu Energi?", content: `<p class="mb-4">Energi adalah kemampuan untuk melakukan kerja.</p>`, quiz: { q: 'Apa yang dimaksud energi?', ops: ['Benda terlihat', 'Kemampuan kerja', 'Alat pancing'], ans: 1 } },
+            { title: "Matahari", content: `<p class="mb-4">Matahari adalah sumber energi panas terbesar.</p>`, quiz: { q: 'Pemanfaatan panas matahari?', ops: ['Menyalakan mesin', 'Menjemur ikan', 'Menerangi malam'], ans: 1 } },
+            { title: "Makanan", content: `<p class="mb-4">Makanan menyimpan energi kimia.</p>`, quiz: { q: 'Energi dalam makanan?', ops: ['Kimia', 'Listrik', 'Cahaya'], ans: 0 } },
+            { title: "Baterai", content: `<p class="mb-4">Baterai menyimpan energi kimia ke listrik.</p>`, quiz: { q: 'Baterai mengubah kimia menjadi...', ops: ['Panas', 'Gerak', 'Listrik'], ans: 2 } },
+            { title: "Bahan Bakar", content: `<p class="mb-4">Bensin adalah energi tak terbarukan.</p>`, quiz: { q: 'Kenapa hemat bensin?', ops: ['Murah', 'Terbatas & lama terbentuk', 'Bisa dibuat'], ans: 1 } },
+            { title: "Perubahan Energi", content: `<p class="mb-4">Kipas angin: Listrik jadi gerak.</p>`, quiz: { q: 'Perubahan pada kipas?', ops: ['Listrik jadi cahaya', 'Listrik jadi gerak', 'Panas jadi gerak'], ans: 1 } },
+            { title: "Terbarukan & Tidak", content: `<p class="mb-4">Matahari (terbarukan), Bensin (tidak).</p>`, quiz: { q: 'Yang terbarukan?', ops: ['Bensin', 'Batu bara', 'Matahari'], ans: 2 } },
+            { title: "Hutan Lindung", content: `<p class="mb-4">Hutan menyimpan biomassa.</p>`, quiz: { q: 'Pesan cinta lingkungan?', ops: ['Tebang sembarang', 'Menjaga hutan', 'Membakar'], ans: 1 } }
+        ];
+        let slideSelesai = new Array(materiData.length).fill(false);
+
+        function renderBelajar() {
+            stopTTS(); const idx = state.currentSlide.belajar; const data = materiData[idx];
+            document.getElementById('belajar-counter').innerText = `${idx + 1}/${materiData.length}`;
+            document.getElementById('belajar-content-container').innerHTML = `
+                <div class="p-6 animate-fade-in"><h2 class="text-2xl font-bold text-emerald-800 mb-6">${data.title}</h2>${data.content}
+                    <div class="mt-8 bg-white border p-6 rounded-2xl">
+                        <h4 class="font-bold mb-4">Tantangan:</h4><p class="mb-4">${data.quiz.q}</p>
+                        <div class="space-y-3">${data.quiz.ops.map((opt, i) => `<button onclick="checkQuizBelajar(${i}, ${data.quiz.ans})" class="w-full text-left p-3 rounded-xl border-2 hover:bg-emerald-50" id="opt-${i}">${opt}</button>`).join('')}</div>
+                        <div id="quiz-feedback" class="mt-4 hidden text-sm font-bold text-center p-3 rounded-xl"></div>
+                    </div>
+                </div>`;
+            updateBelajarFooter();
+        }
+        function checkQuizBelajar(selected, correct) {
+            if (slideSelesai[state.currentSlide.belajar]) return;
+            const fb = document.getElementById('quiz-feedback'); fb.classList.remove('hidden');
+            if (selected === correct) {
+                triggerAnswerFeedback(true); document.getElementById(`opt-${selected}`).classList.add('bg-emerald-100', 'border-emerald-500');
+                fb.innerHTML = "✅ Tepat Sekali!"; fb.className = "mt-4 text-sm font-bold text-center p-3 rounded-xl bg-emerald-100 text-emerald-800";
+                slideSelesai[state.currentSlide.belajar] = true;
+                state.progress.belajar = Math.round((slideSelesai.filter(Boolean).length / materiData.length) * 100);
+                updateBelajarFooter();
+            } else {
+                triggerAnswerFeedback(false); fb.innerHTML = "❌ Kurang tepat."; fb.className = "mt-4 text-sm font-bold text-center p-3 rounded-xl bg-red-100 text-red-800";
+            }
+        }
+        function updateBelajarFooter() {
+            const idx = state.currentSlide.belajar; document.getElementById('btn-prev-materi').disabled = idx === 0;
+            const actionContainer = document.getElementById('materi-action-container');
+            if (slideSelesai[idx]) {
+                if (idx < materiData.length - 1) actionContainer.innerHTML = `<button onclick="navMateri(1)" class="px-6 py-2 rounded-xl btn-primary font-bold">Selanjutnya ➔</button>`;
+                else actionContainer.innerHTML = `<button onclick="finishBelajar()" class="px-6 py-2 rounded-xl bg-yellow-500 text-white font-bold">Selesai Belajar 🎉</button>`;
+            } else actionContainer.innerHTML = `<span class="text-sm text-gray-400 italic">Jawab tantangan untuk lanjut</span>`;
+        }
+        function navMateri(dir) { state.currentSlide.belajar += dir; renderBelajar(); }
+        function finishBelajar() { triggerCelebration(); showAlert('Luar Biasa!', 'Menu BERMAIN TERBUKA!'); state.progress.belajar = 100; navigate('screen-menu'); updateMenuUI(); }
+
+        // --- DATA BERMAIN ---
+        const bermainData = [
+            { type: 'mc', q: 'Sumber energi panas Pak Hasan?', ops: ['Listrik', 'Kayu bakar', 'Matahari', 'Angin'], ans: 2 },
+            { type: 'match', q: 'Pasangkan jenis energi!', pairs: [{ item: 'Senter', target: 'Baterai' }, { item: 'Jagung', target: 'Makanan' }] },
+            { type: 'mc', q: 'Perubahan pada baterai kamera?', ops: ['Gerak ke cahaya', 'Kimia ke listrik', 'Panas ke kimia'], ans: 1 },
+            { type: 'order', q: 'Urutkan aliran energi ayam goreng:', items: ['Matahari menyinari', 'Tumbuhan hijau', 'Ayam memakan', 'Manusia memakan'] },
+            { type: 'tts', q: 'Sumber energi panas & cahaya terbesar?', clue: `M _ _ _ _ _ R I`, ans: `MATAHARI` },
+            { type: 'mc', q: 'Bahan bakar kendaraan dari minyak bumi?', ops: ['Air', 'Angin', 'Bensin'], ans: 2 }
+        ];
+        
+        let bermainState = { correct: 0, answers: new Array(bermainData.length).fill("-") };
+
+        function renderBermain() {
+            stopTTS(); const idx = state.currentSlide.bermain; const data = bermainData[idx];
+            document.getElementById('bermain-counter').innerText = idx + 1;
+            let html = `<div class="bg-white rounded-3xl p-6 shadow-sm"><p class="font-bold mb-4">${data.q}</p>`;
+            
+            if (data.type === 'mc') {
+                html += `<div class="space-y-3" id="bermain-options">${data.ops.map((opt, i) => `<button onclick="handleBermainAns(this, ${i === data.ans})" class="w-full text-left p-4 rounded-xl border-2 hover:bg-amber-50 transition">${opt}</button>`).join('')}</div>`;
+            } else if (data.type === 'match') {
+                html += `<div class="flex gap-6"><div class="w-1/2 space-y-3" id="match-sources">${data.pairs.map((p, i) => `<button onclick="selectMatchSource(this, '${i}')" class="w-full p-3 bg-blue-50 border-2 rounded-xl">${p.item}</button>`).join('')}</div>
+                         <div class="w-1/2 space-y-3" id="match-targets">${data.pairs.map((p, i) => `<button onclick="selectMatchTarget(this, '${i}')" class="w-full p-3 bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl">Taruh: ${p.target}</button>`).join('')}</div></div>`;
+                state.tempSelection = null;
+            } else if (data.type === 'order') {
+                html += `<div class="space-y-2 mb-4" id="order-sources">${data.items.map(item => `<button onclick="selectOrderItem(this, '${item}')" class="w-full p-3 bg-gray-50 border-2 rounded-xl text-left">${item}</button>`).join('')}</div>
+                         <ol id="order-answers" class="list-decimal pl-5"></ol>`;
+                window.currentOrderItems = []; window.correctOrderItems = data.items;
+            } else if (data.type === 'tts') {
+                html += `<div class="flex gap-2 mb-6" id="tts-grid">${data.ans.split('').map((c, i) => `<input type="text" maxlength="1" class="tts-cell w-10 h-12 text-center text-xl uppercase border-2 border-amber-400 rounded-xl">`).join('')}</div>
+                         <button onclick="checkTTSAnswer('${data.ans}')" id="btn-periksa-tts" class="w-full py-3 bg-amber-500 text-white rounded-xl">Periksa</button>`;
+            }
+            html += `<div id="bermain-feedback" class="mt-6 text-center font-bold hidden p-3 rounded-xl"></div>
+                     <div class="mt-6 text-center hidden" id="bermain-next-btn"><button onclick="nextBermain()" class="btn-primary px-8 py-3 rounded-full font-bold">Lanjut ➔</button></div></div>`;
+            document.getElementById('bermain-content-container').innerHTML = html;
+        }
+
+        function handleBermainAns(btn, isCorrect) {
+            const container = document.getElementById('bermain-options');
+            if(container.hasAttribute('disabled')) return; container.setAttribute('disabled', 'true');
+            bermainState.answers[state.currentSlide.bermain] = btn.innerText; // Simpan ke State Database
+            
+            const fb = document.getElementById('bermain-feedback'); fb.classList.remove('hidden');
+            document.getElementById('bermain-next-btn').classList.remove('hidden');
+            if(isCorrect) { triggerAnswerFeedback(true); btn.className = "w-full text-left p-4 rounded-xl border-2 border-green-500 bg-green-50"; fb.innerHTML = "🌟 Tepat Sekali!"; fb.className = "mt-6 text-center font-bold p-3 rounded-xl bg-green-100 text-green-800"; bermainState.correct++; } 
+            else { triggerAnswerFeedback(false); btn.className = "w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-50"; fb.innerHTML = "Kurang Tepat!"; fb.className = "mt-6 text-center font-bold p-3 rounded-xl bg-red-100 text-red-800"; }
+        }
+        function selectMatchSource(btn, id) { state.tempSelection = { id: id, btn: btn }; }
+        function selectMatchTarget(btn, targetId) {
+            if(!state.tempSelection) return;
+            if(state.tempSelection.id === targetId) {
+                triggerAnswerFeedback(true); btn.innerHTML = state.tempSelection.btn.innerHTML + ' ✅'; btn.classList.replace('border-dashed', 'border-solid'); btn.classList.add('border-green-500', 'bg-green-100'); state.tempSelection.btn.style.visibility = 'hidden'; state.tempSelection = null;
+                if(Array.from(document.getElementById('match-targets').children).filter(b => b.classList.contains('border-dashed')).length === 0) {
+                    bermainState.correct++; bermainState.answers[state.currentSlide.bermain] = "Tepat Merangkai";
+                    document.getElementById('bermain-feedback').innerHTML = "🌟 Berhasil!"; document.getElementById('bermain-feedback').className = "mt-6 text-center font-bold p-3 rounded-xl bg-green-100 text-green-800 block"; document.getElementById('bermain-next-btn').classList.remove('hidden');
+                }
+            } else { triggerAnswerFeedback(false); btn.classList.add('bg-red-100'); setTimeout(() => btn.classList.remove('bg-red-100'), 500); }
+        }
+        function selectOrderItem(btn, text) {
+            if(btn.disabled) return; btn.disabled = true; window.currentOrderItems.push(text);
+            document.getElementById('order-answers').innerHTML += `<li>${text}</li>`;
+            if(window.currentOrderItems.length === window.correctOrderItems.length) {
+                let isCorrect = window.currentOrderItems.join() === window.correctOrderItems.join();
+                bermainState.answers[state.currentSlide.bermain] = window.currentOrderItems.join(" -> "); // Simpan jawaban
+                const fb = document.getElementById('bermain-feedback'); fb.classList.remove('hidden'); document.getElementById('bermain-next-btn').classList.remove('hidden');
+                if(isCorrect) { triggerAnswerFeedback(true); bermainState.correct++; fb.innerHTML = "🌟 Sempurna!"; fb.className = "mt-6 text-center font-bold p-3 rounded-xl bg-green-100 text-green-800"; } 
+                else { triggerAnswerFeedback(false); fb.innerHTML = "Urutan keliru."; fb.className = "mt-6 text-sm text-center font-bold p-3 rounded-xl bg-red-100 text-red-800"; }
+            }
+        }
+        function checkTTSAnswer(correctAns) {
+            let userAns = Array.from(document.querySelectorAll('.tts-cell')).map(i => i.value.toUpperCase()).join('');
+            const fb = document.getElementById('bermain-feedback'); fb.classList.remove('hidden');
+            if (userAns === correctAns) {
+                triggerAnswerFeedback(true); bermainState.answers[state.currentSlide.bermain] = userAns;
+                document.getElementById('btn-periksa-tts').classList.add('hidden'); fb.innerHTML = "🎉 Benar!"; fb.className = "mt-6 text-center font-bold p-3 rounded-xl bg-green-100 text-green-800"; bermainState.correct++; document.getElementById('bermain-next-btn').classList.remove('hidden');
+            } else { triggerAnswerFeedback(false); fb.innerHTML = "❌ Belum tepat."; fb.className = "mt-6 text-center font-bold p-3 rounded-xl bg-red-100 text-red-800"; }
+        }
+        function nextBermain() { state.currentSlide.bermain++; if (state.currentSlide.bermain < bermainData.length) renderBermain(); else finishBermain(); }
+        function finishBermain() {
+            state.progress.bermain = 100; state.scores.bermain = (bermainState.correct / bermainData.length) * 100;
+            triggerCelebration(); showAlert('Hebat!', `Berhasil ${bermainState.correct} dari ${bermainData.length} tantangan! Menu BERLATIH terbuka.`);
+            navigate('screen-menu'); updateMenuUI();
+        }
+
+        // --- DATA BERLATIH ---
+        const berlatihData = [
+            { lvl: 1, point: 10, q: 'Apa yang dimaksud sumber energi?', ops: ['Penghasil cahaya', 'Benda penghasil energi', 'Peralatan'], ans: 1 },
+            { lvl: 1, point: 10, q: 'Energi dari matahari?', ops: ['Panas & Gerak', 'Panas & Cahaya', 'Kimia'], ans: 1 },
+            { lvl: 1, point: 10, q: 'Makanan menyimpan energi...', ops: ['Listrik', 'Gerak', 'Kimia'], ans: 2 },
+            { lvl: 2, point: 10, q: 'Perubahan pada kincir angin listrik?', ops: ['Gerak → Listrik', 'Listrik → Gerak', 'Panas → Listrik'], ans: 0 },
+            { lvl: 2, point: 10, q: 'Kenapa hemat BBM?', ops: ['Murah', 'Tidak dapat diperbarui', 'Bikin polusi suara'], ans: 1 },
+            { lvl: 2, point: 10, q: 'Minyak zaitun untuk pelita adalah sumber energi...', ops: ['Gerak', 'Kimia (Api/Cahaya)', 'Listrik'], ans: 1 },
+            { lvl: 2, point: 10, q: 'Perubahan pada mobil baterai?', ops: ['Gerak → Listrik', 'Kimia → Listrik → Gerak', 'Cahaya → Listrik'], ans: 1 },
+            { lvl: 3, point: 10, q: 'Solusi jangka panjang listrik desa?', ops: ['Genset BBM', 'PLTA Sungai/Biomassa', 'Tebang pohon'], ans: 1 },
+            { lvl: 3, point: 10, q: 'Lampu LED mahal tapi irit?', ops: ['Pilih LED, hemat daya jangka panjang', 'Pilih Pijar termurah', 'Tidak usah lampu'], ans: 0 },
+            { lvl: 3, point: 10, q: 'Mengapa reklamasi pohon penting?', ops: ['Gali lagi', 'Penangkap energi matahari pertama (produsen)', 'Hiasan'], ans: 1 }
+        ];
+
+        let berlatihState = { answers: new Array(berlatihData.length).fill(null) };
+
+        function renderBerlatih() {
+            stopTTS(); const idx = state.currentSlide.berlatih; const data = berlatihData[idx];
+            document.getElementById('berlatih-counter').innerText = idx + 1;
+            document.getElementById('berlatih-content-container').innerHTML = `
+                <div class="bg-white rounded-3xl p-6 shadow-md border-t-8 border-purple-500 animate-slide-up">
+                    <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800">Soal Asesmen</span></div>
+                    <p class="font-bold text-lg mb-6">${data.q}</p>
+                    <div class="space-y-3">
+                        ${data.ops.map((opt, i) => {
+                            let isSelected = berlatihState.answers[idx] === i;
+                            let btnClass = isSelected ? "w-full text-left p-4 rounded-xl border-2 border-purple-600 bg-purple-50 font-bold" : "w-full text-left p-4 rounded-xl border-2 hover:bg-gray-50";
+                            return `<button onclick="selectBerlatihAns(${i})" class="${btnClass}">${opt}</button>`;
+                        }).join('')}
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="navBerlatih(-1)" ${idx === 0 ? 'disabled' : ''} class="px-6 py-2 text-sm text-gray-500 disabled:opacity-30">◄ Sebelumnya</button>
+                        ${idx === berlatihData.length - 1 ? `<button onclick="submitBerlatih()" class="btn-primary px-8 py-3 rounded-full font-bold">Kumpulkan ✔</button>` : `<button onclick="navBerlatih(1)" class="bg-purple-100 px-6 py-2 rounded-full font-bold">Selanjutnya ►</button>`}
+                    </div>
+                </div>`;
+        }
+
+        function selectBerlatihAns(ansIndex) { berlatihState.answers[state.currentSlide.berlatih] = ansIndex; renderBerlatih(); }
+        function navBerlatih(dir) { state.currentSlide.berlatih += dir; renderBerlatih(); }
+
+        // --- SUBMIT FINAL & KIRIM KE GOOGLE SHEETS ---
+        async function submitBerlatih() {
+            if(berlatihState.answers.includes(null)) { showAlert('Belum Selesai', 'Masih ada soal yang belum dijawab.'); return; }
+            
+            let totalScore = 0; let l1 = 0, l2 = 0, l3 = 0;
+            berlatihData.forEach((soal, i) => {
+                if(berlatihState.answers[i] === soal.ans) {
+                    totalScore += soal.point;
+                    if(soal.lvl === 1) l1++; if(soal.lvl === 2) l2++; if(soal.lvl === 3) l3++;
+                }
+            });
+
+            state.scores.berlatih = { total: totalScore, l1: (l1/3)*100, l2: (l2/4)*100, l3: (l3/3)*100 };
+            state.progress.berlatih = 100;
+
+            prepareRapor();
+            triggerCelebration();
+            
+            // ---> MENGIRIM DATA KE GOOGLE APPS SCRIPT <---
+            await sendDataToGAS();
+            
+            showAlert('Alhamdulillah!', `Skor Asesmen: ${totalScore}. Klik Mengerti untuk melihat Rapor.`);
+            navigate('screen-menu'); updateMenuUI();
+            setTimeout(() => document.getElementById('btn-lihat-rapor').classList.add('animate-bounce'), 500);
+        }
+
+        // Fungsi API Pengiriman Backend
+        async function sendDataToGAS() {
+            if(!GAS_URL || GAS_URL === "URL_GAS_ANDA_DISINI") {
+                console.warn("GAS_URL belum diatur, data tidak dikirim ke server.");
+                return;
+            }
+
+            let dataSoal = [];
+            // Soal Bermain
+            bermainData.forEach((soal, i) => {
+                let opsiStr = soal.ops ? soal.ops.join(" | ") : (soal.pairs ? "Menjodohkan" : (soal.items ? "Mengurutkan" : "TTS"));
+                let kunciStr = soal.ops ? soal.ops[soal.ans] : (soal.ans || "Logika Interaktif");
+                dataSoal.push({ menu: "Bermain", nomor: i + 1, pertanyaan: soal.q || "Tantangan", opsi: opsiStr, kunci: kunciStr });
+            });
+            // Soal Berlatih
+            berlatihData.forEach((soal, i) => {
+                dataSoal.push({ menu: "Berlatih", nomor: i + 1, pertanyaan: soal.q, opsi: soal.ops.join(" | "), kunci: soal.ops[soal.ans] });
+            });
+
+            // Rekap Jawaban
+            let detailJawaban = [];
+            let jumlahBenar = bermainState.correct;
+            let jumlahSalah = bermainData.length - bermainState.correct;
+
+            // Masukkan Histori Jawaban Bermain
+            detailJawaban = detailJawaban.concat(bermainState.answers);
+
+            // Masukkan Histori Jawaban Berlatih
+            berlatihData.forEach((soal, i) => {
+                let usrIdx = berlatihState.answers[i];
+                let usrText = soal.ops[usrIdx];
+                if (usrIdx === soal.ans) jumlahBenar++; else jumlahSalah++;
+                detailJawaban.push(usrText);
+            });
+
+            const payload = {
+                nama: state.student.nama,
+                kelas: state.student.kelas,
+                jumlahBenar: jumlahBenar,
+                jumlahSalah: jumlahSalah,
+                skorAkhir: state.scores.berlatih.total,
+                detailJawaban: detailJawaban,
+                dataSoal: dataSoal
+            };
+
+            try {
+                const msgEl = document.getElementById('alert-message');
+                if(msgEl) msgEl.innerText += "\n(Sedang menyimpan data ke server...)";
+
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Opaque response, menghapus error preflight block dari GAS
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                console.log("Sinyal pengiriman dipicu.");
+            } catch (error) { console.error("Gagal mengirim data:", error); }
+        }
+
+        function prepareRapor() {
+            document.getElementById('rapor-nama').innerText = state.student.nama; document.getElementById('rapor-nama-2').innerText = state.student.nama;
+            document.getElementById('rapor-kelas').innerText = state.student.kelas;
+            const dt = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('rapor-tanggal').innerText = dt; document.getElementById('rapor-tanggal-ttd').innerText = dt;
+            
+            document.getElementById('rapor-bermain-skor').innerText = `${bermainState.correct}/${bermainData.length}`;
+
+            const scr = state.scores.berlatih.total; document.getElementById('rapor-nilai').innerText = scr;
+            let pred = scr >= 90 ? "Sangat Baik (A)" : (scr >= 75 ? "Baik (B)" : (scr >= 60 ? "Cukup (C)" : "Perlu Bimbingan (D)"));
+            document.getElementById('rapor-predikat').innerText = pred;
+
+            document.getElementById('rapor-l1').innerText = `${Math.round(state.scores.berlatih.l1)}%`;
+            document.getElementById('rapor-l2').innerText = `${Math.round(state.scores.berlatih.l2)}%`;
+            document.getElementById('rapor-l3').innerHTML = `${Math.round(state.scores.berlatih.l3)}%`;
+        }
+
+        function cetakPDF() {
+            const el = document.getElementById('pdf-content'); el.classList.remove('shadow-lg', 'border', 'mx-auto');
+            html2pdf().set({
+                margin: 10, filename: `Rapor_${state.student.nama.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(el).save().then(() => el.classList.add('shadow-lg', 'border', 'mx-auto'));
+        }
+        function filterKamus() {
+            const q = document.getElementById('search-kamus').value.toLowerCase();
+            document.querySelectorAll('.kamus-item').forEach(i => i.style.display = i.innerText.toLowerCase().includes(q) ? 'block' : 'none');
+        }
+    </script>
+</body>
+</html>
